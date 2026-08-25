@@ -98,19 +98,23 @@ Proyek ini mengatasi masalah pemalsuan dokumen akademik dan akses ilegal (*unaut
 ## 🔄 Alur Keamanan & Verifikasi Dokumen
 
 ```mermaid
-flowchart TD
-    A[Staf TU: Unggah / Terbitkan Dokumen] --> B[Generate SHA-256 Hash Dokumen]
-    B --> C[Status: Menunggu Persetujuan / Pending Approval]
-    C --> D{Kepala Sekolah: Review Dokumen}
-    D -- Ditolak --> E[Status: Rejected / Dikembalikan ke TU]
-    D -- Disetujui --> F[Status: Approved & Tanda Tangan Digital]
-    F --> G[Pencatatan ke Blockchain Block: Hash, Issuer, Timestamp, TxHash]
-    G --> H[Dokumen Resmi Terbit]
-    
-    I[Mitra DUDI / Publik: Unggah File / Masukkan Hash] --> J[Kalkulasi Hash SHA-256]
-    J --> K{Cocokkan dengan Ledger Blockchain?}
-    K -- Cocok --> L[✅ VERIFIED: Dokumen Asli & Belum Dimodifikasi]
-    K -- Tidak Cocok --> M[❌ INVALID / TAMPERED: Dokumen Palsu atau Telah Diubah]
+graph TD
+    subgraph Penerbitan ["Proses Penerbitan Dokumen"]
+        A["Staf TU: Unggah Dokumen"] --> B["Generate Hash SHA-256"]
+        B --> C["Status: Menunggu Persetujuan"]
+        C --> D{"Kepala Sekolah: Validasi & Approval"}
+        D -->|"Ditolak"| E["Status: Rejected (Dikembalikan ke TU)"]
+        D -->|"Disetujui"| F["Status: Approved & TTD Digital"]
+        F --> G["Record ke Blockchain (Hash, Issuer, TxHash)"]
+        G --> H["Dokumen Resmi Diterbitkan"]
+    end
+
+    subgraph Verifikasi ["Proses Verifikasi Dokumen"]
+        I["Mitra DUDI / Publik: Input Berkas Dokumen"] --> J["Kalkulasi Hash SHA-256 Berkas"]
+        J --> K{"Cek Kecocokan Hash di Ledger Blockchain"}
+        K -->|"Cocok"| L["VERIFIED: Dokumen Asli & Valid"]
+        K -->|"Tidak Cocok"| M["INVALID: Dokumen Palsu / Telah Diubah"]
+    end
 ```
 
 ---
