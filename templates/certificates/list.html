@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Manajemen Ijazah &amp; Transkrip - Sistem Administrasi SMK{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1><i class="bi bi-file-earmark-medical me-2 text-primary"></i>Manajemen Ijazah &amp; Dokumen</h1>
+        <p class="text-muted mb-0">Penerbitan dan pengesahan ijazah kelulusan berbasis blockchain</p>
+    </div>
+    {% if session.role == 'staf_tu' %}
+    <div class="page-header-actions">
+        <a href="{{ url_for('certificates.create_form') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-1"></i> Buat Ijazah Baru
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        {% if certificates %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th style="width: 5%;">No</th>
+                        <th>Nama Siswa</th>
+                        <th>NIS</th>
+                        <th>Nama Dokumen</th>
+                        <th>Status</th>
+                        <th>Document Hash</th>
+                        <th>Tanggal</th>
+                        <th class="text-center" style="width: 15%;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cert in certificates %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td class="fw-semibold">{{ cert.student_name }}</td>
+                        <td><code>{{ cert.nis }}</code></td>
+                        <td>{{ cert.document_name }}</td>
+                        <td>
+                            {% if cert.status == 'draft' %}
+                                <span class="badge badge-status-draft"><i class="bi bi-file-earmark"></i> Draft</span>
+                            {% elif cert.status == 'pending_approval' %}
+                                <span class="badge badge-status-pending"><i class="bi bi-hourglass-split"></i> Pending Approval</span>
+                            {% elif cert.status == 'approved' %}
+                                <span class="badge badge-status-approved"><i class="bi bi-patch-check-fill"></i> Approved</span>
+                            {% elif cert.status == 'rejected' %}
+                                <span class="badge badge-status-rejected"><i class="bi bi-x-circle-fill"></i> Rejected</span>
+                            {% endif %}
+                        </td>
+                        <td><code class="small">{{ cert.document_hash[:12] }}...</code></td>
+                        <td><small class="text-muted">{{ cert.created_at[:10] if cert.created_at else '-' }}</small></td>
+                        <td class="text-center">
+                            <div class="d-inline-flex flex-wrap gap-1 justify-content-center">
+                                <a href="{{ url_for('certificates.detail', id=cert.id) }}" class="btn btn-sm btn-info text-white" title="Lihat Detail">
+                                    <i class="bi bi-eye"></i> Detail
+                                </a>
+                                {% if cert.status == 'draft' and session.role == 'staf_tu' %}
+                                <form action="{{ url_for('certificates.submit', id=cert.id) }}" method="POST" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-primary" onclick="return confirm('Ajukan ijazah ini untuk persetujuan Kepala Sekolah?')">
+                                        <i class="bi bi-send"></i> Submit
+                                    </button>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state py-5">
+            <i class="bi bi-folder2-open d-block mb-3"></i>
+            <h5>Tidak Ada Data Ijazah</h5>
+            <p class="mb-3">Belum ada dokumen ijazah atau transkrip yang dibuat.</p>
+            {% if session.role == 'staf_tu' %}
+            <a href="{{ url_for('certificates.create_form') }}" class="btn btn-primary btn-sm"><i class="bi bi-plus-circle me-1"></i> Buat Ijazah Baru</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Detail Nilai Siswa - {{ student.name }}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1><i class="bi bi-journal-text me-2 text-primary"></i>Data Nilai: {{ student.name }}</h1>
+        <p class="text-muted mb-0">NIS: <code>{{ student.nis }}</code> &bull; Kelas: <strong>{{ student['class'] }}</strong> &bull; Jurusan: {{ student.major }}</p>
+    </div>
+    <div class="page-header-actions">
+        <a href="{{ url_for('grades.list_grades') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Kembali ke Daftar Nilai
+        </a>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white py-3">
+        <h5 class="mb-0 fw-bold">Rekap Nilai Siswa</h5>
+    </div>
+    <div class="card-body p-0">
+        {% if grades %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th style="width: 5%;">No</th>
+                        <th>Mata Pelajaran</th>
+                        <th>Semester</th>
+                        <th>Nilai</th>
+                        <th>Diinput Oleh</th>
+                        <th>Tanggal Input</th>
+                        {% if session.role in ['guru', 'staf_tu', 'kepala_sekolah'] %}
+                        <th class="text-center">Riwayat</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for g in grades %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td class="fw-semibold">{{ g.subject }}</td>
+                        <td>{{ g.semester }}</td>
+                        <td><span class="badge bg-{{ 'success' if g.score >= 75 else 'warning' }} fs-6">{{ g.score }}</span></td>
+                        <td>{{ g.teacher_name or 'Unknown' }}</td>
+                        <td><small class="text-muted">{{ g.created_at[:10] if g.created_at else '-' }}</small></td>
+                        {% if session.role in ['guru', 'staf_tu', 'kepala_sekolah'] %}
+                        <td class="text-center">
+                            <a href="{{ url_for('grades.history', grade_id=g.id) }}" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-clock-history"></i> Audit Trail
+                            </a>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="bi bi-file-earmark-x d-block mb-2"></i>
+            <p>Belum ada data nilai untuk siswa ini.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

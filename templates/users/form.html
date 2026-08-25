@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}{% if mode == 'add' %}Tambah User Baru{% else %}Edit User{% endif %} - Sistem Administrasi SMK{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h4 class="mb-0 fw-bold"><i class="bi bi-person-{% if mode == 'add' %}plus{% else %}gear{% endif %} me-2 text-primary"></i>{% if mode == 'add' %}Tambah User Pengguna Baru{% else %}Edit Data User{% endif %}</h4>
+            </div>
+            <div class="card-body p-3 p-sm-4">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Nama Lengkap <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="name" name="name" value="{{ user.name if user else '' }}" placeholder="Nama lengkap..." required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Alamat Email <span class="text-danger">*</span></label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ user.email if user else '' }}" placeholder="user@smk.sch.id" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Kata Sandi (Password) {% if mode == 'add' %}<span class="text-danger">*</span>{% endif %}</label>
+                        <input type="password" class="form-control" id="password" name="password" {% if mode == 'add' %}required placeholder="Minimal 6 karakter..."{% else %}placeholder="Kosongkan jika tidak ingin mengubah password..."{% endif %}>
+                        {% if mode == 'edit' %}
+                        <div class="form-text text-muted">Biarkan kosong bila tidak ingin mengganti password akun ini.</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="role" class="form-label">Peran Pengguna (RBAC Role) <span class="text-danger">*</span></label>
+                        <select class="form-select" id="role" name="role" required>
+                            <option value="">-- Pilih Peran / Role --</option>
+                            {% for role_key, role_name in roles.items() %}
+                            <option value="{{ role_key }}" {% if user and user.role == role_key %}selected{% endif %}>{{ role_name }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text text-info mt-1"><i class="bi bi-info-circle me-1"></i>Zero Trust Policy: MFA akan otomatis diaktifkan untuk peran Staf TU dan Kepala Sekolah.</div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+                        <a href="{{ url_for('users.list_users') }}" class="btn btn-outline-secondary">Batal</a>
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i> Simpan Data User</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

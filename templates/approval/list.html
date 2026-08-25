@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}Persetujuan Ijazah - Sistem Administrasi SMK{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1><i class="bi bi-clipboard-check me-2 text-warning"></i>Persetujuan Ijazah Kepala Sekolah</h1>
+        <p class="text-muted mb-0">Verifikasi, penandatanganan dan pencatatan on-chain dokumen kelulusan</p>
+    </div>
+    <div>
+        <span class="badge bg-primary blockchain-label"><i class="bi bi-boxes me-1"></i>Blockchain Simulation</span>
+    </div>
+</div>
+
+<div class="card mb-4 border-warning shadow-sm">
+    <div class="card-header bg-warning bg-opacity-25 py-3">
+        <h5 class="card-title mb-0 fw-bold text-dark"><i class="bi bi-hourglass-split me-1"></i> Menunggu Persetujuan (Pending Review)</h5>
+    </div>
+    <div class="card-body p-0">
+        {% if pending %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th style="width: 5%;">No</th>
+                        <th>Nama Siswa</th>
+                        <th>Nama Dokumen</th>
+                        <th>Hash (SHA-256)</th>
+                        <th>Diajukan Pada</th>
+                        <th class="text-center" style="width: 15%;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cert in pending %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>
+                            <strong class="text-dark">{{ cert.student_name }}</strong><br>
+                            <small class="text-muted">NIS: {{ cert.nis }}</small>
+                        </td>
+                        <td>{{ cert.document_name }}</td>
+                        <td><code class="small">{{ cert.document_hash[:12] }}...</code></td>
+                        <td><small class="text-muted">{{ cert.created_at[:16] if cert.created_at else '-' }}</small></td>
+                        <td class="text-center">
+                            <a href="{{ url_for('approval.detail', id=cert.id) }}" class="btn btn-sm btn-primary">
+                                <i class="bi bi-search me-1"></i> Review
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state py-4">
+            <i class="bi bi-check-circle text-success mb-2 d-block fs-1"></i>
+            <h5>Semua Pengajuan Telah Ditinjau</h5>
+            <p class="mb-0">Tidak ada pengajuan ijazah yang sedang menunggu persetujuan.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white py-3">
+        <h5 class="card-title mb-0 fw-bold"><i class="bi bi-clock-history me-1 text-primary"></i> Riwayat Keputusan Persetujuan</h5>
+    </div>
+    <div class="card-body p-0">
+        {% if history %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th style="width: 5%;">No</th>
+                        <th>Nama Siswa</th>
+                        <th>Dokumen</th>
+                        <th>Status</th>
+                        <th>Waktu Keputusan</th>
+                        <th class="text-center" style="width: 15%;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cert in history %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>
+                            <strong>{{ cert.student_name }}</strong><br>
+                            <small class="text-muted">NIS: {{ cert.nis }}</small>
+                        </td>
+                        <td>{{ cert.document_name }}</td>
+                        <td>
+                            {% if cert.status == 'approved' %}
+                                <span class="badge bg-success"><i class="bi bi-patch-check-fill me-1"></i> Approved</span>
+                            {% elif cert.status == 'rejected' %}
+                                <span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i> Rejected</span>
+                            {% endif %}
+                        </td>
+                        <td><small class="text-muted">{{ cert.approved_at[:16] if cert.approved_at else '-' }}</small></td>
+                        <td class="text-center">
+                            <a href="{{ url_for('approval.detail', id=cert.id) }}" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-eye"></i> Detail
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state py-4">
+            <p class="mb-0">Belum ada riwayat persetujuan ijazah.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

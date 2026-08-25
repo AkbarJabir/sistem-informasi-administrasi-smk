@@ -1,0 +1,320 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Sistem Informasi Administrasi SMK{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>Dashboard Administrasi</h1>
+        <p class="text-muted mb-0">Selamat datang kembali, <strong>{{ session.name }}</strong> ({{ role_display }})</p>
+    </div>
+    <div>
+        <span class="badge bg-role-{{ session.role|replace('_', '-') }} py-2 px-3 fs-6">
+            <i class="bi bi-person-badge me-1"></i> Peran: {{ role_display }}
+        </span>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     ROLE: SISWA
+     ═══════════════════════════════════════════════════════════════════ -->
+{% if session.role == 'siswa' %}
+<div class="row g-3 mb-4">
+    <div class="col-12 col-lg-6">
+        <div class="card h-100 shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0 fw-bold"><i class="bi bi-person-vcard text-primary me-2"></i>Profil Siswa</h5>
+            </div>
+            <div class="card-body">
+                {% if stats.student %}
+                <div class="table-responsive">
+                    <table class="table table-sm table-borderless mb-0">
+                        <tbody>
+                            <tr>
+                                <th class="text-muted" style="width: 35%;">Nama Lengkap</th>
+                                <td class="fw-semibold">{{ session.name }}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">NIS</th>
+                                <td><code>{{ stats.student.nis }}</code></td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">Kelas</th>
+                                <td><span class="badge bg-light text-dark border">{{ stats.student['class'] }}</span></td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">Program Keahlian</th>
+                                <td>{{ stats.student.major }}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">Tahun Masuk</th>
+                                <td>{{ stats.student.enrollment_year }}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">Status Akun</th>
+                                <td><span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Aktif</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted mb-0">Data siswa tidak ditemukan di database.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-12 col-sm-6 col-lg-3">
+        <div class="stat-card bg-primary-custom h-100">
+            <div class="stat-icon"><i class="bi bi-journal-text"></i></div>
+            <div>
+                <div class="stat-value">{{ stats.grade_count }}</div>
+                <div class="stat-label">Mata Pelajaran</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-12 col-sm-6 col-lg-3">
+        <div class="stat-card bg-success-custom h-100">
+            <div class="stat-icon"><i class="bi bi-patch-check"></i></div>
+            <div>
+                <div class="stat-value">{{ stats.certificate_count }}</div>
+                <div class="stat-label">Dokumen Ijazah</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-lightning-charge text-warning me-2"></i>Aksi Cepat Siswa</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="{{ url_for('grades.list_grades') }}" class="btn btn-outline-primary">
+                        <i class="bi bi-journal-text me-1"></i> Lihat Nilai Saya
+                    </a>
+                    <a href="{{ url_for('verification.verify_index') }}" class="btn btn-outline-success">
+                        <i class="bi bi-patch-check me-1"></i> Verifikasi Dokumen
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     ROLE: GURU
+     ═══════════════════════════════════════════════════════════════════ -->
+{% if session.role == 'guru' %}
+<div class="row g-3 mb-4">
+    <div class="col-12 col-sm-6">
+        <div class="stat-card bg-primary-custom">
+            <div class="stat-icon"><i class="bi bi-people"></i></div>
+            <div>
+                <div class="stat-value">{{ stats.student_count }}</div>
+                <div class="stat-label">Total Siswa Terdaftar</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6">
+        <div class="stat-card bg-info-custom">
+            <div class="stat-icon"><i class="bi bi-pencil-square"></i></div>
+            <div>
+                <div class="stat-value">{{ stats.grade_count }}</div>
+                <div class="stat-label">Total Nilai Diinput</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-lightning-charge text-warning me-2"></i>Aksi Cepat Guru</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="{{ url_for('students.list_students') }}" class="btn btn-outline-primary">
+                        <i class="bi bi-people me-1"></i> Data Siswa
+                    </a>
+                    <a href="{{ url_for('grades.add_get') }}" class="btn btn-primary">
+                        <i class="bi bi-plus-lg me-1"></i> Input Nilai Baru
+                    </a>
+                    <a href="{{ url_for('grades.list_grades') }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-journal-text me-1"></i> Kelola Nilai
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     ROLE: STAF TU
+     ═══════════════════════════════════════════════════════════════════ -->
+{% if session.role == 'staf_tu' %}
+<div class="row g-3 mb-4">
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="stat-card bg-primary-custom">
+            <div class="stat-icon"><i class="bi bi-people"></i></div>
+            <div>
+                <div class="stat-value">{{ stats.student_count }}</div>
+                <div class="stat-label">Total Siswa</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="stat-card bg-success-custom">
+            <div class="stat-icon"><i class="bi bi-file-earmark-medical"></i></div>
+            <div>
+                <div class="stat-value">{{ stats.cert_count }}</div>
+                <div class="stat-label">Total Ijazah</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="stat-card bg-warning-custom">
+            <div class="stat-icon"><i class="bi bi-hourglass-split"></i></div>
+            <div>
+                <div class="stat-value">{{ stats.pending_count }}</div>
+                <div class="stat-label">Menunggu Approval</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="stat-card bg-info-custom">
+            <div class="stat-icon"><i class="bi bi-person-gear"></i></div>
+            <div>
+                <div class="stat-value">{{ stats.user_count }}</div>
+                <div class="stat-label">Total Pengguna</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-lightning-charge text-warning me-2"></i>Aksi Cepat Tata Usaha</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="{{ url_for('students.list_students') }}" class="btn btn-outline-primary">
+                        <i class="bi bi-people me-1"></i> Data Siswa
+                    </a>
+                    <a href="{{ url_for('certificates.create_form') }}" class="btn btn-primary">
+                        <i class="bi bi-file-earmark-plus me-1"></i> Buat Ijazah Baru
+                    </a>
+                    <a href="{{ url_for('internship.list_internships') }}" class="btn btn-outline-info">
+                        <i class="bi bi-building me-1"></i> Sertifikat PKL
+                    </a>
+                    <a href="{{ url_for('audit.list_audit_logs') }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-clock-history me-1"></i> Audit Log
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     ROLE: KEPALA SEKOLAH
+     ═══════════════════════════════════════════════════════════════════ -->
+{% if session.role == 'kepala_sekolah' %}
+<div class="row g-3 mb-4">
+    <div class="col-12 col-md-4">
+        <div class="stat-card bg-warning-custom">
+            <div class="stat-icon"><i class="bi bi-hourglass-split"></i></div>
+            <div>
+                <div class="stat-value">{{ stats.pending_count }}</div>
+                <div class="stat-label">Menunggu Persetujuan</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-4">
+        <div class="stat-card bg-success-custom">
+            <div class="stat-icon"><i class="bi bi-patch-check"></i></div>
+            <div>
+                <div class="stat-value">{{ stats.approved_count }}</div>
+                <div class="stat-label">Ijazah On-Chain</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-4">
+        <div class="stat-card bg-primary-custom">
+            <div class="stat-icon"><i class="bi bi-people"></i></div>
+            <div>
+                <div class="stat-value">{{ stats.student_count }}</div>
+                <div class="stat-label">Total Siswa</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-lightning-charge text-warning me-2"></i>Aksi Cepat Kepala Sekolah</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="{{ url_for('approval.list_approvals') }}" class="btn btn-warning text-dark fw-semibold">
+                        <i class="bi bi-clipboard-check me-1"></i> Persetujuan Ijazah ({{ stats.pending_count }})
+                    </a>
+                    <a href="{{ url_for('certificates.list_certificates') }}" class="btn btn-outline-primary">
+                        <i class="bi bi-file-earmark-medical me-1"></i> Data Ijazah
+                    </a>
+                    <a href="{{ url_for('audit.list_audit_logs') }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-clock-history me-1"></i> Audit Log
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     ROLE: MITRA DUDI
+     ═══════════════════════════════════════════════════════════════════ -->
+{% if session.role == 'mitra_dudi' %}
+<div class="row g-3 mb-4">
+    <div class="col-12">
+        <div class="stat-card bg-info-custom py-4">
+            <div class="stat-icon"><i class="bi bi-building"></i></div>
+            <div>
+                <div class="stat-value">{{ stats.internship_count }}</div>
+                <div class="stat-label">Total Sertifikat PKL Terdaftar</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-lightning-charge text-warning me-2"></i>Aksi Cepat Mitra DUDI</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="{{ url_for('internship.list_internships') }}" class="btn btn-outline-info">
+                        <i class="bi bi-building me-1"></i> Lihat Sertifikat PKL
+                    </a>
+                    <a href="{{ url_for('verification.verify_index') }}" class="btn btn-outline-success">
+                        <i class="bi bi-patch-check me-1"></i> Verifikasi Dokumen
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

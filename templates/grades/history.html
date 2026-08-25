@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Riwayat Perubahan Nilai - Sistem Administrasi SMK{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1><i class="bi bi-clock-history me-2 text-primary"></i>Riwayat Audit Perubahan Nilai</h1>
+        <p class="text-muted mb-0">Audit trail tidak dapat diubah (immutable logs) setiap kali nilai diubah</p>
+    </div>
+    <div class="page-header-actions">
+        <a href="{{ url_for('grades.list_grades') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Kembali ke Daftar Nilai
+        </a>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-white py-3">
+        <h5 class="mb-0 fw-bold"><i class="bi bi-journal-check text-primary me-2"></i>Informasi Mata Pelajaran &amp; Nilai</h5>
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-12 col-md-6">
+                <p class="mb-2"><strong>Siswa:</strong> {{ grade.student_name }} (NIS: <code>{{ grade.nis }}</code>)</p>
+                <p class="mb-0"><strong>Mata Pelajaran:</strong> {{ grade.subject }}</p>
+            </div>
+            <div class="col-12 col-md-6">
+                <p class="mb-2"><strong>Semester:</strong> {{ grade.semester }}</p>
+                <p class="mb-0"><strong>Nilai Terkini:</strong> <span class="badge bg-{{ 'success' if grade.score >= 75 else 'warning' }} fs-6">{{ grade.score }}</span></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white py-3">
+        <h5 class="mb-0 fw-bold"><i class="bi bi-shield-check text-success me-2"></i>Log Audit Perubahan</h5>
+    </div>
+    <div class="card-body p-0">
+        {% if logs %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th style="width: 5%;">No</th>
+                        <th>Aksi</th>
+                        <th>Nilai Lama</th>
+                        <th>Nilai Baru</th>
+                        <th>Diubah Oleh</th>
+                        <th>Waktu Perubahan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>
+                            {% if log.action == 'CREATE' %}
+                            <span class="badge bg-success">CREATE</span>
+                            {% elif log.action == 'UPDATE' %}
+                            <span class="badge bg-primary">UPDATE</span>
+                            {% else %}
+                            <span class="badge bg-secondary">{{ log.action }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ log.old_value if log.old_value is not none else '-' }}</td>
+                        <td><strong class="text-primary">{{ log.new_value }}</strong></td>
+                        <td>
+                            <strong>{{ log.user_name or 'Unknown' }}</strong>
+                            {% if log.user_role %}
+                            <span class="badge bg-role-{{ log.user_role|replace('_', '-') }} ms-1">{{ log.user_role }}</span>
+                            {% endif %}
+                        </td>
+                        <td><small class="text-muted">{{ log.timestamp }}</small></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="bi bi-clock-history d-block mb-2"></i>
+            <p>Belum ada riwayat perubahan nilai ini.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

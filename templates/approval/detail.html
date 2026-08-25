@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% block title %}Review Ijazah - Sistem Administrasi SMK{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1><i class="bi bi-shield-check me-2 text-primary"></i>Review &amp; Pengesahan Ijazah</h1>
+        <p class="text-muted mb-0">Verifikasi berkas fisik dan validasi kriptografis sebelum pencatatan on-chain</p>
+    </div>
+    <div class="page-header-actions">
+        <a href="{{ url_for('approval.list_approvals') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Kembali ke Antrean
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-12 col-lg-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-file-earmark-text text-primary me-2"></i>Informasi Dokumen Siswa</h5>
+                <span class="badge bg-primary blockchain-label">Simulation</span>
+            </div>
+            <div class="card-body p-3 p-sm-4">
+                <h4 class="fw-bold text-primary mb-3">{{ cert.document_name }}</h4>
+                <div class="table-responsive">
+                    <table class="table table-borderless mb-0">
+                        <tbody>
+                            <tr>
+                                <th class="text-muted" style="width: 30%;">Nama Siswa</th>
+                                <td class="fw-semibold">{{ cert.student_name }}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">NIS</th>
+                                <td><code>{{ cert.nis }}</code></td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">Tipe Dokumen</th>
+                                <td><span class="badge bg-light text-dark border text-uppercase">{{ cert.type }}</span></td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">Tanggal Diajukan</th>
+                                <td>{{ cert.created_at }}</td>
+                            </tr>
+                            {% if cert.pdf_filename %}
+                            <tr>
+                                <th class="text-muted">Berkas Dokumen</th>
+                                <td>
+                                    <a href="{{ url_for('certificates.view_file', id=cert.id) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-file-earmark-pdf me-1"></i> Buka / Unduh Berkas PDF ({{ cert.pdf_filename }})
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="mt-4 pt-3 border-top">
+                    <label class="form-label text-muted fw-bold">Document Hash (SHA-256):</label>
+                    <div class="hash-display">
+                        {{ cert.document_hash }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-12 col-lg-4">
+        {% if cert.status == 'pending_approval' %}
+        <div class="card border-primary shadow-sm mb-4">
+            <div class="card-header bg-primary text-white py-3">
+                <h5 class="card-title mb-0 fw-bold"><i class="bi bi-shield-lock me-1"></i>Tindakan Persetujuan</h5>
+            </div>
+            <div class="card-body p-3 p-sm-4">
+                <p class="card-text small text-muted mb-3">Menyetujui dokumen akan secara otomatis menghitung validitas dan mencatat hash SHA-256 ke dalam blockchain simulation ledger secara permanen.</p>
+                
+                <form action="{{ url_for('approval.approve', id=cert.id) }}" method="POST" class="mb-2">
+                    <button type="submit" class="btn btn-success w-100 py-2 fw-semibold" onclick="return confirm('Setujui ijazah dan catat ke blockchain secara permanen?')">
+                        <i class="bi bi-check-circle me-1"></i> Setujui &amp; Catat Blockchain
+                    </button>
+                </form>
+                
+                <button type="button" class="btn btn-outline-danger w-100 py-2" data-bs-toggle="modal" data-bs-target="#rejectModal">
+                    <i class="bi bi-x-circle me-1"></i> Tolak Pengajuan
+                </button>
+            </div>
+        </div>
+        
+        <!-- Modal Penolakan -->
+        <div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <form action="{{ url_for('approval.reject', id=cert.id) }}" method="POST">
+                        <div class="modal-header bg-danger text-white">
+                            <h5 class="modal-title fw-bold" id="rejectModalLabel"><i class="bi bi-exclamation-octagon me-2"></i>Tolak Pengajuan Ijazah</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body p-3 p-sm-4">
+                            <div class="mb-3">
+                                <label for="rejection_reason" class="form-label">Alasan Penolakan <span class="text-danger">*</span></label>
+                                <textarea class="form-control" id="rejection_reason" name="rejection_reason" rows="3" placeholder="Sebutkan catatan kesalahan data atau dokumen..." required></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer bg-light">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-danger">Tolak Ijazah</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="card-title mb-0 fw-bold"><i class="bi bi-clock-history text-primary me-2"></i>Status Keputusan</h5>
+            </div>
+            <div class="card-body p-3 p-sm-4">
+                {% if cert.status == 'approved' %}
+                    <div class="text-center mb-3">
+                        <i class="bi bi-check-circle-fill text-success fs-1"></i>
+                        <h4 class="mt-2 text-success fw-bold">Disetujui</h4>
+                    </div>
+                    <hr>
+                    <p class="mb-1 text-muted small">Waktu Persetujuan:</p>
+                    <p class="fw-semibold">{{ cert.approved_at }}</p>
+                    <p class="mb-1 text-muted small">Blockchain Tx:</p>
+                    <div class="hash-display text-primary small text-break">{{ cert.blockchain_tx_hash }}</div>
+                {% elif cert.status == 'rejected' %}
+                    <div class="text-center mb-3">
+                        <i class="bi bi-x-circle-fill text-danger fs-1"></i>
+                        <h4 class="mt-2 text-danger fw-bold">Ditolak</h4>
+                    </div>
+                    <hr>
+                    <p class="mb-1 text-muted small">Alasan Penolakan:</p>
+                    <p class="fw-semibold text-danger">{{ cert.rejection_reason }}</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

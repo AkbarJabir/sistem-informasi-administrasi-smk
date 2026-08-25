@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+{% block title %}Detail Ijazah - {{ cert.document_name }}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1><i class="bi bi-file-earmark-text me-2 text-primary"></i>{{ cert.document_name }}</h1>
+        <p class="text-muted mb-0">Siswa: <strong>{{ cert.student_name }}</strong> (NIS: <code>{{ cert.nis }}</code>)</p>
+    </div>
+    <div class="page-header-actions">
+        <a href="{{ url_for('certificates.list_certificates') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Kembali ke Daftar
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-12 col-lg-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="card-title mb-0 fw-bold"><i class="bi bi-info-circle text-primary me-2"></i>Informasi Dokumen</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-borderless mb-0">
+                        <tbody>
+                            <tr>
+                                <th class="text-muted" style="width: 30%;">Nama Siswa</th>
+                                <td class="fw-semibold">{{ cert.student_name }}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">NIS</th>
+                                <td><code>{{ cert.nis }}</code></td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">Tipe Dokumen</th>
+                                <td><span class="text-uppercase badge bg-light text-dark border">{{ cert.type }}</span></td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">Status Pengesahan</th>
+                                <td>
+                                    {% if cert.status == 'draft' %}
+                                        <span class="badge badge-status-draft">Draft</span>
+                                    {% elif cert.status == 'pending_approval' %}
+                                        <span class="badge badge-status-pending">Pending Approval</span>
+                                    {% elif cert.status == 'approved' %}
+                                        <span class="badge badge-status-approved"><i class="bi bi-patch-check-fill me-1"></i> Approved (On-Chain)</span>
+                                    {% elif cert.status == 'rejected' %}
+                                        <span class="badge badge-status-rejected"><i class="bi bi-x-circle me-1"></i> Rejected</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">Tanggal Dibuat</th>
+                                <td>{{ cert.created_at }}</td>
+                            </tr>
+                            {% if cert.pdf_filename %}
+                            <tr>
+                                <th class="text-muted">Berkas Dokumen</th>
+                                <td>
+                                    <a href="{{ url_for('certificates.view_file', id=cert.id) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-file-earmark-pdf me-1"></i> Buka / Unduh Berkas PDF ({{ cert.pdf_filename }})
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="card-title mb-0 fw-bold"><i class="bi bi-fingerprint text-primary me-2"></i>Cryptographic Hash (SHA-256)</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted small mb-2">Hash SHA-256 dihitung dari isi file PDF asli untuk mencegah pemalsuan.</p>
+                <div class="hash-display">
+                    {{ cert.document_hash }}
+                </div>
+            </div>
+        </div>
+        
+        <div class="card shadow-sm border-info">
+            <div class="card-header bg-info bg-opacity-10 py-3">
+                <div class="d-flex justify-content-between align-items-center w-100 flex-wrap gap-2">
+                    <h5 class="card-title mb-0 fw-bold text-primary">
+                        <i class="bi bi-boxes me-2"></i>Status Blockchain Ledger
+                    </h5>
+                    <span class="badge bg-primary blockchain-label">Simulation</span>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if cert.status == 'approved' and cert.blockchain_tx_hash %}
+                <div class="table-responsive">
+                    <table class="table table-borderless mb-0">
+                        <tbody>
+                            <tr>
+                                <th class="text-muted" style="width: 25%;">Transaction Hash</th>
+                                <td><code class="text-primary text-break">{{ cert.blockchain_tx_hash }}</code></td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">Waktu Dicatat</th>
+                                <td>{{ cert.issued_at }}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">Integritas</th>
+                                <td><span class="badge bg-success"><i class="bi bi-shield-check me-1"></i>Immutable &amp; Verified</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted fst-italic mb-0"><i class="bi bi-hourglass-split me-1"></i>Dokumen belum dicatat ke blockchain. Diperlukan persetujuan dari Kepala Sekolah.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-12 col-lg-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="card-title mb-0 fw-bold"><i class="bi bi-clipboard-check text-primary me-2"></i>Status Persetujuan</h5>
+            </div>
+            <div class="card-body">
+                {% if cert.status == 'approved' %}
+                    <div class="alert alert-success mb-0">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="bi bi-patch-check-fill fs-4 text-success"></i>
+                            <strong>Disetujui Kepala Sekolah</strong>
+                        </div>
+                        <p class="small mb-1"><strong>Oleh:</strong> {{ cert.approved_by_name or 'Kepala Sekolah' }}</p>
+                        <p class="small mb-0"><strong>Waktu:</strong> {{ cert.approved_at }}</p>
+                    </div>
+                {% elif cert.status == 'rejected' %}
+                    <div class="alert alert-danger mb-0">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="bi bi-x-circle-fill fs-4 text-danger"></i>
+                            <strong>Ditolak</strong>
+                        </div>
+                        <p class="small mb-0"><strong>Alasan:</strong> {{ cert.rejection_reason or 'Tidak ada alasan.' }}</p>
+                    </div>
+                {% elif cert.status == 'pending_approval' %}
+                    <div class="alert alert-warning mb-0">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="bi bi-hourglass-split fs-4 text-warning"></i>
+                            <strong>Menunggu Review</strong>
+                        </div>
+                        <p class="small mb-0 text-muted">Sedang menunggu verifikasi dan tanda tangan digital Kepala Sekolah.</p>
+                    </div>
+                {% else %}
+                    <div class="alert alert-secondary mb-0">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="bi bi-file-earmark fs-4 text-secondary"></i>
+                            <strong>Status: Draft</strong>
+                        </div>
+                        <p class="small mb-0 text-muted">Dokumen belum diajukan untuk persetujuan.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if cert.status == 'draft' and session.role == 'staf_tu' %}
+        <div class="card shadow-sm border-warning">
+            <div class="card-body text-center p-4">
+                <i class="bi bi-send text-warning fs-1 mb-2 d-block"></i>
+                <h6 class="fw-bold">Ajukan Persetujuan</h6>
+                <p class="small text-muted mb-3">Ajukan ijazah ini kepada Kepala Sekolah untuk ditinjau dan dicatatkan ke blockchain.</p>
+                <form action="{{ url_for('certificates.submit', id=cert.id) }}" method="POST">
+                    <button type="submit" class="btn btn-warning w-100 fw-semibold" onclick="return confirm('Apakah Anda yakin ingin mengajukan ijazah ini?')">
+                        <i class="bi bi-send me-1"></i> Submit untuk Persetujuan
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

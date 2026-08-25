@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}User Management - Sistem Administrasi SMK{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1><i class="bi bi-people me-2 text-primary"></i>User &amp; Access Management</h1>
+        <p class="text-muted mb-0">Manajemen akun pengguna, konfigurasi Zero Trust MFA &amp; Peran (RBAC)</p>
+    </div>
+    <div class="page-header-actions">
+        <a href="{{ url_for('users.add_user') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-1"></i> Tambah User Baru
+        </a>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th style="width: 5%;">No</th>
+                        <th>Nama Pengguna</th>
+                        <th>Alamat Email</th>
+                        <th>Role / Hak Akses</th>
+                        <th>Zero Trust MFA</th>
+                        <th>Dibuat</th>
+                        <th class="text-center" style="width: 15%;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if users %}
+                        {% for user in users %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td class="fw-semibold">{{ user.name }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>
+                                <span class="badge bg-role-{{ user.role|replace('_', '-') }}">
+                                    {{ user.role|replace('_', ' ')|title }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if user.mfa_enabled %}
+                                <span class="badge bg-success"><i class="bi bi-shield-check me-1"></i> Enabled</span>
+                                {% else %}
+                                <span class="badge bg-secondary"><i class="bi bi-shield-x me-1"></i> Disabled</span>
+                                {% endif %}
+                            </td>
+                            <td><small class="text-muted">{{ user.created_at[:10] }}</small></td>
+                            <td class="text-center">
+                                <div class="d-inline-flex gap-1 justify-content-center">
+                                    <a href="{{ url_for('users.edit_user', id=user.id) }}" class="btn btn-sm btn-outline-primary" title="Edit Akun">
+                                        <i class="bi bi-pencil"></i> Edit
+                                    </a>
+                                    <form action="{{ url_for('users.toggle_mfa', id=user.id) }}" method="POST" class="d-inline">
+                                        <button type="submit" class="btn btn-sm {% if user.mfa_enabled %}btn-outline-warning{% else %}btn-outline-success{% endif %}" title="Toggle MFA Status">
+                                            <i class="bi bi-shield-lock"></i> MFA
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-5">Belum ada akun user terdaftar.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}Detail Sertifikat PKL - {{ cert.student_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1><i class="bi bi-patch-check me-2 text-primary"></i>Detail Sertifikat PKL</h1>
+        <p class="text-muted mb-0">Siswa: <strong>{{ cert.student_name }}</strong> &bull; Mitra: <strong>{{ cert.company_name }}</strong></p>
+    </div>
+    <div class="page-header-actions">
+        <a href="{{ url_for('internship.list_internships') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Kembali ke Daftar
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-12 col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-person-vcard text-primary me-2"></i>Informasi Siswa &amp; Perusahaan</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-borderless mb-0">
+                        <tbody>
+                            <tr>
+                                <th class="text-muted" style="width: 35%;">Nama Siswa</th>
+                                <td class="fw-semibold">{{ cert.student_name }}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">NIS</th>
+                                <td><code>{{ cert.nis }}</code></td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">Mitra Industri</th>
+                                <td><strong>{{ cert.company_name }}</strong></td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">Wallet ID DUDI</th>
+                                <td><code class="text-break small">{{ cert.wallet_id or 'N/A' }}</code></td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">Periode PKL</th>
+                                <td>{{ cert.period_start }} s/d {{ cert.period_end }}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">Status Ledger</th>
+                                <td>
+                                    {% if cert.blockchain_tx_hash %}
+                                    <span class="badge bg-success"><i class="bi bi-patch-check-fill me-1"></i> Terverifikasi On-Chain</span>
+                                    {% else %}
+                                    <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split me-1"></i> Menunggu Verifikasi</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-boxes text-info me-2"></i>Kriptografi &amp; Blockchain</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label text-muted small fw-bold">Document Hash (SHA-256):</label>
+                    <div class="hash-display">
+                        {{ cert.document_hash }}
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label text-muted small fw-bold">Digital Signature Mitra DUDI (ECDSA/RSA):</label>
+                    <div class="hash-display text-break small">
+                        {{ cert.digital_signature }}
+                    </div>
+                </div>
+                
+                <div class="mb-0">
+                    <label class="form-label text-muted small fw-bold">Blockchain Transaction Hash:</label>
+                    {% if cert.blockchain_tx_hash %}
+                    <div class="hash-display text-primary text-break">
+                        <i class="bi bi-check-circle-fill text-success me-1"></i> {{ cert.blockchain_tx_hash }}
+                    </div>
+                    {% else %}
+                    <p class="text-muted small fst-italic mb-0">Belum dicatat di blockchain.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

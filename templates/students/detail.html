@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}Detail Siswa - {{ student.name }}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1><i class="bi bi-person-badge me-2 text-primary"></i>{{ student.name }}</h1>
+        <p class="text-muted mb-0">NIS: <code>{{ student.nis }}</code> &bull; Kelas: <strong>{{ student['class'] }}</strong> &bull; Jurusan: {{ student.major }}</p>
+    </div>
+    <div class="page-header-actions">
+        <a href="{{ url_for('students.list_students') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Kembali ke Daftar
+        </a>
+        {% if session.role == 'staf_tu' %}
+        <a href="{{ url_for('students.edit_get', id=student.id) }}" class="btn btn-warning">
+            <i class="bi bi-pencil"></i> Edit Siswa
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-12 col-lg-5">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-info-circle text-primary me-2"></i>Informasi Siswa</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-borderless mb-0">
+                        <tbody>
+                            <tr>
+                                <th class="text-muted" style="width: 40%;">NIS</th>
+                                <td><code>{{ student.nis }}</code></td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">Nama Lengkap</th>
+                                <td class="fw-semibold">{{ student.name }}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">Kelas</th>
+                                <td><span class="badge bg-light text-dark border">{{ student['class'] }}</span></td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">Program Keahlian</th>
+                                <td>{{ student.major }}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">Tahun Masuk</th>
+                                <td>{{ student.enrollment_year }}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">Tahun Lulus</th>
+                                <td>{{ student.graduation_year or 'Masih Aktif' }}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">Status</th>
+                                <td>
+                                    {% if student.graduation_year %}
+                                    <span class="badge bg-secondary">Alumni</span>
+                                    {% else %}
+                                    <span class="badge bg-success">Siswa Aktif</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-7">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-journal-text text-primary me-2"></i>Daftar Nilai Siswa</h5>
+                {% if session.role == 'guru' %}
+                <a href="{{ url_for('grades.add_get') }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-plus-lg"></i> Input Nilai</a>
+                {% endif %}
+            </div>
+            <div class="card-body p-0">
+                {% if grades %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Mata Pelajaran</th>
+                                <th>Semester</th>
+                                <th>Nilai</th>
+                                <th>Guru Pengajar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for g in grades %}
+                            <tr>
+                                <td class="fw-semibold">{{ g.subject }}</td>
+                                <td>{{ g.semester }}</td>
+                                <td>
+                                    <span class="badge bg-{{ 'success' if g.score >= 75 else 'warning' }} fs-6">{{ g.score }}</span>
+                                </td>
+                                <td><small class="text-muted">{{ g.teacher_name or '-' }}</small></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state py-4">
+                    <i class="bi bi-journal-x d-block mb-2"></i>
+                    <p class="mb-0">Belum ada data nilai untuk siswa ini.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

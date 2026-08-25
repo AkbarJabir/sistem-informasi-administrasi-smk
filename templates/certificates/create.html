@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Buat Ijazah Baru - Sistem Administrasi SMK{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h4 class="mb-0 fw-bold"><i class="bi bi-file-earmark-plus text-primary me-2"></i>Buat Ijazah / Dokumen Baru</h4>
+            </div>
+            <div class="card-body p-3 p-sm-4">
+                <p class="text-muted small mb-4">Unggah file dokumen ijazah siswa format PDF. Sistem akan menghitung cryptographic hash (SHA-256) untuk verifikasi blockchain.</p>
+                
+                <form action="{{ url_for('certificates.create') }}" method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="student_id" class="form-label">Pilih Siswa <span class="text-danger">*</span></label>
+                        <select class="form-select" id="student_id" name="student_id" required>
+                            <option value="" selected disabled>-- Pilih Siswa Penerima Ijazah --</option>
+                            {% for student in students %}
+                            <option value="{{ student.id }}">{{ student.nis }} - {{ student.name }} ({{ student['class'] }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="row g-3 mb-3">
+                        <div class="col-12 col-sm-8">
+                            <label for="document_name" class="form-label">Nama Dokumen <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="document_name" name="document_name" placeholder="Misal: Ijazah Kelulusan SMK 2024" required>
+                        </div>
+                        <div class="col-12 col-sm-4">
+                            <label for="type" class="form-label">Tipe Dokumen</label>
+                            <select class="form-select" id="type" name="type">
+                                <option value="ijazah" selected>Ijazah</option>
+                                <option value="transkrip">Transkrip Nilai</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="document_file" class="form-label">File Dokumen Asli (PDF) <span class="text-danger">*</span></label>
+                        <input type="file" class="form-control" id="document_file" name="document_file" accept=".pdf" required>
+                        <div class="form-text">Unggah file PDF (maks. 16 MB). Hash SHA-256 dihitung di server dan dicatat ke ledger setelah disetujui.</div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+                        <a href="{{ url_for('certificates.list_certificates') }}" class="btn btn-outline-secondary">Batal</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save me-1"></i> Simpan Sebagai Draft
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

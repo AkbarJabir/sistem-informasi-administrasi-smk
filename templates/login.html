@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Login - Sistem Informasi Administrasi SMK{% endblock %}
+{% block content_public %}
+<div class="login-card">
+    <div class="text-center mb-4">
+        <div class="d-inline-flex p-3 rounded-circle bg-primary bg-opacity-10 text-primary mb-2">
+            <i class="bi bi-shield-lock-fill" style="font-size: 2.25rem;"></i>
+        </div>
+        <h3 class="fw-bold text-primary mb-1">SMK Admin</h3>
+        <p class="text-muted small mb-0">Sistem Informasi Administrasi SMK Berbasis Zero Trust &amp; Blockchain</p>
+    </div>
+
+    <form method="POST" action="{{ url_for('auth.login') }}">
+        <div class="mb-3">
+            <label for="email" class="form-label">Alamat Email</label>
+            <div class="input-group">
+                <span class="input-group-text bg-light"><i class="bi bi-envelope text-muted"></i></span>
+                <input type="email" class="form-control" id="email" name="email" placeholder="nama@smk.sch.id" required autofocus>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <div class="input-group">
+                <span class="input-group-text bg-light"><i class="bi bi-key text-muted"></i></span>
+                <input type="password" class="form-control" id="password" name="password" placeholder="••••••••" required>
+            </div>
+        </div>
+        <div class="d-grid mt-4">
+            <button type="submit" class="btn btn-primary py-2 fw-semibold">
+                <i class="bi bi-box-arrow-in-right me-1"></i> Masuk ke Sistem
+            </button>
+        </div>
+    </form>
+
+    <div class="mt-4 pt-3 border-top">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="small fw-bold text-muted"><i class="bi bi-info-circle me-1"></i>Demo Accounts</span>
+            <a href="{{ url_for('verification.verify_index') }}" class="small text-decoration-none"><i class="bi bi-patch-check me-1"></i>Verifikasi Dokumen</a>
+        </div>
+        <div class="table-responsive rounded border">
+            <table class="table table-sm table-striped text-center mb-0" style="font-size: 0.775rem;">
+                <thead class="table-light">
+                    <tr>
+                        <th>Role</th>
+                        <th>Email</th>
+                        <th>Password</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><span class="badge bg-role-siswa">Siswa</span></td><td class="text-start">siswa@smk.sch.id</td><td><code>siswa123</code></td></tr>
+                    <tr><td><span class="badge bg-role-guru">Guru</span></td><td class="text-start">guru@smk.sch.id</td><td><code>guru123</code></td></tr>
+                    <tr><td><span class="badge bg-role-staf-tu">TU (MFA)</span></td><td class="text-start">tu@smk.sch.id</td><td><code>tu123</code></td></tr>
+                    <tr><td><span class="badge bg-role-kepala-sekolah">Kepsek (MFA)</span></td><td class="text-start">kepsek@smk.sch.id</td><td><code>kepsek123</code></td></tr>
+                    <tr><td><span class="badge bg-role-mitra-dudi">Mitra DUDI</span></td><td class="text-start">dudi@industry.co.id</td><td><code>dudi123</code></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

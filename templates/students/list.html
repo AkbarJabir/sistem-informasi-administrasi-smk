@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Data Siswa - Sistem Informasi Administrasi SMK{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1><i class="bi bi-people me-2 text-primary"></i>Data Siswa</h1>
+        <p class="text-muted mb-0">Manajemen direktori siswa SMK</p>
+    </div>
+    <div class="page-header-actions">
+        <form action="{{ url_for('students.list_students') }}" method="GET" class="d-flex gap-2">
+            <div class="input-group">
+                <input type="text" name="q" class="form-control" placeholder="Cari NIS / Nama..." value="{{ q or '' }}">
+                <button type="submit" class="btn btn-outline-primary" aria-label="Cari"><i class="bi bi-search"></i></button>
+            </div>
+            {% if q %}
+            <a href="{{ url_for('students.list_students') }}" class="btn btn-outline-secondary" title="Reset Pencarian"><i class="bi bi-x-lg"></i></a>
+            {% endif %}
+        </form>
+        {% if session.role == 'staf_tu' %}
+        <a href="{{ url_for('students.add_get') }}" class="btn btn-primary text-nowrap">
+            <i class="bi bi-plus-lg"></i> Tambah Siswa
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+{% if students %}
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th style="width: 5%;">No</th>
+                    <th>NIS</th>
+                    <th>Nama Lengkap</th>
+                    <th>Kelas</th>
+                    <th>Program Keahlian</th>
+                    <th>Tahun Masuk</th>
+                    <th>Tahun Lulus</th>
+                    <th class="text-center" style="width: 15%;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in students %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td><code>{{ s.nis }}</code></td>
+                    <td class="fw-semibold">{{ s.name }}</td>
+                    <td><span class="badge bg-light text-dark border">{{ s['class'] }}</span></td>
+                    <td>{{ s.major }}</td>
+                    <td>{{ s.enrollment_year }}</td>
+                    <td>{{ s.graduation_year or '-' }}</td>
+                    <td class="text-center">
+                        <div class="d-inline-flex gap-1">
+                            <a href="{{ url_for('students.detail', id=s.id) }}" class="btn btn-sm btn-info text-white" title="Lihat Detail">
+                                <i class="bi bi-eye"></i> Detail
+                            </a>
+                            {% if session.role == 'staf_tu' %}
+                            <a href="{{ url_for('students.edit_get', id=s.id) }}" class="btn btn-sm btn-warning" title="Edit Data">
+                                <i class="bi bi-pencil"></i> Edit
+                            </a>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="card shadow-sm">
+    <div class="empty-state">
+        <i class="bi bi-people d-block mb-3"></i>
+        <h5>Belum Ada Data Siswa</h5>
+        <p class="mb-3">{% if q %}Tidak ada siswa yang cocok dengan pencarian "<strong>{{ q }}</strong>".{% else %}Belum ada data siswa yang terdaftar dalam sistem.{% endif %}</p>
+        {% if q %}
+        <a href="{{ url_for('students.list_students') }}" class="btn btn-outline-primary btn-sm">Reset Pencarian</a>
+        {% elif session.role == 'staf_tu' %}
+        <a href="{{ url_for('students.add_get') }}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> Tambah Siswa Pertama</a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

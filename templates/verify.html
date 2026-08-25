@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Portal Verifikasi Dokumen — Blockchain Ledger{% endblock %}
+
+{% block content %}
+<div class="verify-card card mx-auto shadow-sm">
+    <div class="card-header bg-white py-3">
+        <div>
+            <h4 class="mb-0 fw-bold text-primary"><i class="bi bi-patch-check-fill me-2 text-success"></i>Portal Verifikasi Dokumen</h4>
+            <p class="mb-0 text-muted small">Verifikasi keaslian Ijazah, Transkrip &amp; Sertifikat PKL via SHA-256 Blockchain Ledger</p>
+        </div>
+        <span class="badge bg-primary blockchain-label"><i class="bi bi-boxes me-1"></i>Blockchain Simulation</span>
+    </div>
+    <div class="card-body p-3 p-sm-4">
+        <div class="mb-4">
+            <h6 class="fw-bold mb-2">Upload Dokumen PDF</h6>
+            <p class="text-muted small">Unggah file dokumen PDF untuk memverifikasi keaslian melalui pencocokan hash SHA-256 dengan catatan blockchain terenkripsi.</p>
+            
+            <form method="POST" enctype="multipart/form-data" class="mt-3">
+                <div class="mb-3">
+                    <label for="pdfFile" class="form-label">Pilih Berkas Dokumen (PDF)</label>
+                    <input type="file" class="form-control" id="pdfFile" name="file" accept=".pdf" required>
+                </div>
+                <button type="submit" class="btn btn-primary px-4">
+                    <i class="bi bi-search me-1"></i> Mulai Verifikasi
+                </button>
+            </form>
+        </div>
+        
+        {% if uploaded_hash %}
+        <hr class="my-4">
+        <div>
+            <h6 class="fw-bold mb-2">Sidik Jari Digital Dokumen (SHA-256):</h6>
+            <div class="hash-display mb-3">{{ uploaded_hash }}</div>
+            
+            <div class="verify-result {% if result.verified %}valid{% else %}invalid{% endif %}">
+                {% if result.verified %}
+                    <i class="bi bi-patch-check-fill text-success d-block mb-2" style="font-size: 3.5rem;"></i>
+                    <h4 class="result-status text-success fw-bold">DOKUMEN ASLI / VALID</h4>
+                    <p class="text-muted mb-3">{{ result.message }}</p>
+                    
+                    <div class="table-responsive rounded border bg-white text-start">
+                        <table class="table table-sm mb-0">
+                            <tbody>
+                                <tr>
+                                    <th class="bg-light" style="width: 35%;">Block Index</th>
+                                    <td><span class="badge bg-primary">Block #{{ result.block_index }}</span></td>
+                                </tr>
+                                <tr>
+                                    <th class="bg-light">Tx Hash</th>
+                                    <td><code class="text-break">{{ result.tx_hash }}</code></td>
+                                </tr>
+                                <tr>
+                                    <th class="bg-light">Waktu Penerbitan</th>
+                                    <td>{{ result.timestamp }}</td>
+                                </tr>
+                                <tr>
+                                    <th class="bg-light">Penerbit (Issuer)</th>
+                                    <td><strong>{{ result.issuer_name }}</strong> <span class="badge bg-role-{{ result.issuer_role|replace('_', '-') }} ms-1">{{ result.issuer_role }}</span></td>
+                                </tr>
+                                <tr>
+                                    <th class="bg-light">Jenis Dokumen</th>
+                                    <td><span class="text-uppercase fw-semibold">{{ result.doc_type }}</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <i class="bi bi-x-octagon-fill text-danger d-block mb-2" style="font-size: 3.5rem;"></i>
+                    <h4 class="result-status text-danger fw-bold">DOKUMEN TIDAK VALID / PALSU</h4>
+                    <p class="text-danger fw-semibold mb-1">{{ result.message }}</p>
+                    <p class="text-muted small mb-0">Hash berkas PDF ini tidak ditemukan atau tidak cocok dengan catatan blok mana pun di blockchain ledger.</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="mt-4 pt-2 text-center">
+            {% if session.get('user_id') %}
+                <a href="{{ url_for('dashboard.dashboard') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i> Kembali ke Dashboard
+                </a>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary">
+                    <i class="bi bi-box-arrow-in-right me-1"></i> Masuk / Login
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content_public %}
+{{ self.content() }}
+{% endblock %}

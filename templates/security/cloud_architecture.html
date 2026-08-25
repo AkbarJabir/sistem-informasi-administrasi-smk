@@ -1,0 +1,333 @@
+{% extends "base.html" %}
+{% block title %}Cloud Security Architecture — Zero Trust &amp; Blockchain{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1><i class="bi bi-diagram-3 me-2 text-primary"></i>Cloud Security Architecture</h1>
+        <p class="text-muted mb-0">Desain Topologi Zero Trust Network &amp; Blockchain Integration — Dokumentasi Arsitektur Sistem (BAB II Laporan)</p>
+    </div>
+    <div class="page-header-actions">
+        <span class="badge bg-primary fs-6"><i class="bi bi-shield-check me-1"></i> Zero Trust Enforced</span>
+        <span class="badge bg-info text-dark fs-6"><i class="bi bi-link-45deg me-1"></i> Blockchain Hybrid</span>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     1. Visual Cloud Architecture Diagram
+     ═══════════════════════════════════════════════════════════════════ -->
+<div class="card shadow-sm mb-4 border-0">
+    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <h5 class="mb-0 fw-bold"><i class="bi bi-cpu me-2 text-primary"></i>Diagram Topologi Cloud Security Architecture (Zero Trust)</h5>
+        <span class="badge bg-light text-dark border">Format Laporan / BAB II</span>
+    </div>
+    <div class="card-body p-3 p-sm-4 bg-light">
+        
+        <!-- Interactive Flow Visualization -->
+        <div class="row g-3 justify-content-center text-center">
+            
+            <!-- Perimeter Layer -->
+            <div class="col-12">
+                <div class="p-3 bg-white rounded border shadow-sm text-center">
+                    <span class="badge bg-secondary mb-2">Perimeter &amp; External Ingress</span>
+                    <div class="d-flex justify-content-center align-items-center gap-2 gap-md-3 flex-wrap">
+                        <div class="p-2 border rounded bg-light flex-grow-1" style="min-width: 140px; max-width: 220px;">
+                            <i class="bi bi-globe2 fs-3 text-secondary d-block"></i>
+                            <strong>Internet Traffic</strong><br>
+                            <small class="text-muted">HTTPS / TLS 1.3</small>
+                        </div>
+                        <i class="bi bi-arrow-right fs-3 text-primary d-none d-md-block"></i>
+                        <i class="bi bi-arrow-down fs-3 text-primary d-md-none w-100"></i>
+                        <div class="p-2 border rounded bg-warning bg-opacity-10 border-warning flex-grow-1" style="min-width: 150px; max-width: 240px;">
+                            <i class="bi bi-shield-exclamation fs-3 text-warning d-block"></i>
+                            <strong>AWS Shield / Cloud Armor</strong><br>
+                            <small class="text-muted">DDoS Layer 3/4 Mitigation</small>
+                        </div>
+                        <i class="bi bi-arrow-right fs-3 text-primary d-none d-md-block"></i>
+                        <i class="bi bi-arrow-down fs-3 text-primary d-md-none w-100"></i>
+                        <div class="p-2 border rounded bg-danger bg-opacity-10 border-danger flex-grow-1" style="min-width: 150px; max-width: 240px;">
+                            <i class="bi bi-shield-shaded fs-3 text-danger d-block"></i>
+                            <strong>AWS WAF / Cloud Armor</strong><br>
+                            <small class="text-muted">OWASP Top 10, SQLi, XSS</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Down Arrow -->
+            <div class="col-12 py-0 my-1">
+                <i class="bi bi-arrow-down fs-2 text-primary"></i>
+            </div>
+
+            <!-- Public Subnet -->
+            <div class="col-12">
+                <div class="p-3 bg-white rounded border border-primary border-opacity-25 shadow-sm text-center">
+                    <span class="badge bg-primary mb-2">Public Subnet (DMZ Layer)</span>
+                    <div class="d-flex justify-content-center align-items-center gap-3 flex-wrap">
+                        <div class="p-2 border rounded bg-primary bg-opacity-10 w-100" style="max-width: 400px;">
+                            <i class="bi bi-hdd-network fs-3 text-primary d-block"></i>
+                            <strong>Application Load Balancer (ALB)</strong><br>
+                            <small class="text-muted">TLS Termination &amp; Reverse Proxy</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Down Arrow -->
+            <div class="col-12 py-0 my-1">
+                <i class="bi bi-arrow-down fs-2 text-primary"></i>
+            </div>
+
+            <!-- Private Application Subnet -->
+            <div class="col-12">
+                <div class="p-3 bg-white rounded border border-success border-opacity-50 shadow-sm text-center">
+                    <span class="badge bg-success mb-2">Private Application Subnet (Zero Trust PEP)</span>
+                    <div class="d-flex justify-content-center align-items-center gap-3 flex-wrap">
+                        <div class="p-2 border rounded bg-success bg-opacity-10 w-100" style="max-width: 480px;">
+                            <i class="bi bi-terminal-split fs-3 text-success d-block"></i>
+                            <strong>Web Application &amp; API (Flask / Gunicorn)</strong><br>
+                            <small class="text-muted">Zero Trust Identity &amp; RBAC Verification Middleware</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Down Arrow -->
+            <div class="col-12 py-0 my-1">
+                <i class="bi bi-arrow-down fs-2 text-primary"></i>
+            </div>
+
+            <!-- Isolated Data & Blockchain Layer -->
+            <div class="col-12">
+                <div class="row g-3">
+                    <!-- Database Subnet -->
+                    <div class="col-12 col-md-4">
+                        <div class="p-3 bg-white rounded border border-info shadow-sm h-100">
+                            <span class="badge bg-info text-dark mb-2">Isolated Data Subnet</span>
+                            <div class="p-2 border rounded bg-light">
+                                <i class="bi bi-database-fill-lock fs-3 text-info d-block"></i>
+                                <strong>Database (Aurora / SQLite)</strong><br>
+                                <small class="text-muted">Encrypted at Rest (AES-256)<br>No Direct Public Ingress</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- KMS / HSM -->
+                    <div class="col-12 col-md-4">
+                        <div class="p-3 bg-white rounded border border-warning shadow-sm h-100">
+                            <span class="badge bg-warning text-dark mb-2">Key Management Subnet</span>
+                            <div class="p-2 border rounded bg-light">
+                                <i class="bi bi-key-fill fs-3 text-warning d-block"></i>
+                                <strong>AWS KMS / Cloud HSM</strong><br>
+                                <small class="text-muted">Key Rotation &amp; Digital Signatures<br>Secrets Never Exposed to Client</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Blockchain Layer -->
+                    <div class="col-12 col-md-4">
+                        <div class="p-3 bg-white rounded border border-dark shadow-sm h-100">
+                            <span class="badge bg-dark mb-2">Blockchain Network (Simulation)</span>
+                            <div class="p-2 border rounded bg-light">
+                                <i class="bi bi-boxes fs-3 text-dark d-block"></i>
+                                <strong>Smart Contract &amp; Hash Ledger</strong><br>
+                                <small class="text-muted">SHA-256 Document Verification<br>Immutable Audit Trail</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     2. Komponen Arsitektur & Prinsip Zero Trust (BAB II Material)
+     ═══════════════════════════════════════════════════════════════════ -->
+<h4 class="fw-bold mb-3"><i class="bi bi-journal-check me-2 text-primary"></i>Uraian Komponen &amp; Prinsip Zero Trust</h4>
+
+<div class="row g-4 mb-4">
+    <!-- Component 1: Perimeter & WAF -->
+    <div class="col-12 col-lg-6">
+        <div class="card h-100 shadow-sm">
+            <div class="card-header bg-white fw-bold py-3">
+                <i class="bi bi-shield-shaded text-danger me-2"></i>1. Perimeter Defense (DDoS &amp; WAF)
+            </div>
+            <div class="card-body p-3 p-sm-4">
+                <p><strong>Fungsi Utama:</strong> Berada di garis terdepan untuk memfilter traffic internet sebelum menyentuh aplikasi.</p>
+                <ul class="small text-muted mb-3">
+                    <li><strong>DDoS Protection:</strong> Mitigasi serangan flood Layer 3 &amp; 4 (SYN Flood, UDP Reflection).</li>
+                    <li><strong>Web Application Firewall (WAF):</strong> Memblokir payload berbahaya Layer 7 seperti <em>SQL Injection</em>, <em>Cross-Site Scripting (XSS)</em>, dan <em>Path Traversal</em>.</li>
+                    <li><strong>Rate Limiting:</strong> Mencegah brute-force pada endpoint <code>/login</code> dan <code>/mfa-verify</code>.</li>
+                </ul>
+                <div class="bg-light p-2 rounded small">
+                    <strong>Pemetaan Cloud:</strong> AWS WAF + AWS Shield / GCP Cloud Armor
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Component 2: Public DMZ & ALB -->
+    <div class="col-12 col-lg-6">
+        <div class="card h-100 shadow-sm">
+            <div class="card-header bg-white fw-bold py-3">
+                <i class="bi bi-hdd-network text-primary me-2"></i>2. Public Subnet &amp; Application Load Balancer
+            </div>
+            <div class="card-body p-3 p-sm-4">
+                <p><strong>Fungsi Utama:</strong> Menerima traffic publik terenkripsi (HTTPS) dan mendistribusikannya ke instance aplikasi di private subnet.</p>
+                <ul class="small text-muted mb-3">
+                    <li><strong>TLS Termination:</strong> Memastikan seluruh data in-transit terlindungi dengan protokol TLS 1.3.</li>
+                    <li><strong>Reverse Proxy:</strong> Menyembunyikan alamat IP dan topologi internal server backend dari publik.</li>
+                    <li><strong>Health Checks:</strong> Memonitor ketersediaan container aplikasi secara kontinu.</li>
+                </ul>
+                <div class="bg-light p-2 rounded small">
+                    <strong>Pemetaan Cloud:</strong> AWS Application Load Balancer (ALB) / Google Cloud Load Balancing
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Component 3: Zero Trust Application Layer -->
+    <div class="col-12 col-lg-6">
+        <div class="card h-100 shadow-sm">
+            <div class="card-header bg-white fw-bold py-3">
+                <i class="bi bi-lock-fill text-success me-2"></i>3. Private Subnet: Zero Trust Policy Enforcement
+            </div>
+            <div class="card-body p-3 p-sm-4">
+                <p><strong>Fungsi Utama:</strong> Menjalankan logika bisnis administrasi SMK dengan menerapkan prinsip <em>"Never Trust, Always Verify"</em>.</p>
+                <ul class="small text-muted mb-3">
+                    <li><strong>Contextual RBAC:</strong> Setiap request diperiksa role dan izinnya di level middleware, bukan sekadar menyembunyikan tombol UI. Akses tidak sah menghasilkan <strong>403 Forbidden</strong>.</li>
+                    <li><strong>Multi-Factor Authentication (MFA):</strong> Diwajibkan bagi akun administratif (Staf TU &amp; Kepala Sekolah).</li>
+                    <li><strong>Least Privilege Access:</strong> Siswa hanya bisa membaca nilainya sendiri; Guru hanya dapat mengelola nilai; Kepala Sekolah berwenang menyetujui ijazah.</li>
+                </ul>
+                <div class="bg-light p-2 rounded small">
+                    <strong>Pemetaan Cloud:</strong> AWS ECS/EKS / Google Kubernetes Engine (GKE) / Cloud Run
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Component 4: Isolated Data Subnet & KMS -->
+    <div class="col-12 col-lg-6">
+        <div class="card h-100 shadow-sm">
+            <div class="card-header bg-white fw-bold py-3">
+                <i class="bi bi-database-fill-lock text-info me-2"></i>4. Isolated Data Subnet &amp; Key Management
+            </div>
+            <div class="card-body p-3 p-sm-4">
+                <p><strong>Fungsi Utama:</strong> Menyimpan data tabular dan mengelola kunci kriptografi secara terisolasi tanpa akses langsung dari internet.</p>
+                <ul class="small text-muted mb-3">
+                    <li><strong>Encryption at Rest:</strong> Database dan file upload dienkripsi menggunakan kunci KMS yang dirotasi secara otomatis.</li>
+                    <li><strong>Network Isolation:</strong> Port database hanya terbuka bagi security group container aplikasi di private subnet.</li>
+                    <li><strong>Audit Logging:</strong> Seluruh aktivitas administratif dan perubahan nilai dicatat secara permanen ke tabel <code>audit_logs</code>.</li>
+                </ul>
+                <div class="bg-light p-2 rounded small">
+                    <strong>Pemetaan Cloud:</strong> Amazon Aurora PostgreSQL / Cloud SQL + AWS KMS / Cloud KMS
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Component 5: Blockchain Ledger Simulation -->
+    <div class="col-12">
+        <div class="card shadow-sm border-dark">
+            <div class="card-header bg-dark text-white fw-bold py-3">
+                <i class="bi bi-boxes me-2"></i>5. Blockchain Subnet &amp; Smart Contract Document Verification
+            </div>
+            <div class="card-body p-3 p-sm-4">
+                <div class="row g-3">
+                    <div class="col-12 col-lg-8">
+                        <p><strong>Fungsi Utama:</strong> Menjamin integritas dan keabsahan dokumen penting (Ijazah, Transkrip, Sertifikat PKL) melalui sidik jari kriptografis.</p>
+                        <ul class="small text-muted mb-0">
+                            <li><strong>Off-Chain Storage, On-Chain Hash:</strong> File fisik PDF disimpan di storage terenkripsi, hanya hash SHA-256 (32 byte) yang dicatat ke ledger.</li>
+                            <li><strong>Smart Contract Authorization:</strong> Fungsi <code>issueCertificate()</code> hanya dapat dieksekusi oleh wallet Kepala Sekolah terotorisasi; request dari pihak luar ditolak dengan <em>Transaction Reverted</em>.</li>
+                            <li><strong>Reentrancy Guard:</strong> Smart contract dilengkapi proteksi mutex untuk menangkal eksploitasi reentrancy.</li>
+                            <li><strong>Public Trustless Verification:</strong> Universitas dan industri dapat memverifikasi PDF secara publik tanpa memerlukan akun login.</li>
+                        </ul>
+                    </div>
+                    <div class="col-12 col-lg-4 d-flex align-items-center justify-content-center">
+                        <div class="p-3 bg-light border rounded text-center w-100">
+                            <span class="badge bg-primary mb-2">Simulasi Blockchain</span>
+                            <div class="font-monospace small text-primary mb-1">SHA-256 Chaining</div>
+                            <div class="text-success fw-bold"><i class="bi bi-check-circle-fill me-1"></i> Integrity Verified</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     3. Tabel Pemetaan Arsitektur AWS vs GCP
+     ═══════════════════════════════════════════════════════════════════ -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-white fw-bold py-3">
+        <i class="bi bi-table me-2 text-primary"></i>Perbandingan Pemetaan Layanan Cloud (AWS vs. Google Cloud Platform)
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Komponen Arsitektur</th>
+                        <th>Prinsip Zero Trust</th>
+                        <th>Amazon Web Services (AWS)</th>
+                        <th>Google Cloud Platform (GCP)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="fw-semibold">Perimeter &amp; DDoS</td>
+                        <td>Assume Breach, Inspect Traffic</td>
+                        <td>AWS Shield Standard / Advanced</td>
+                        <td>Google Cloud Armor Managed Protection</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-semibold">Web App Firewall</td>
+                        <td>Filter Malicious Payloads (L7)</td>
+                        <td>AWS WAF (Managed Rulesets)</td>
+                        <td>Cloud Armor Security Policies</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-semibold">Load Balancer</td>
+                        <td>Micro-segmentation &amp; TLS 1.3</td>
+                        <td>Application Load Balancer (ALB)</td>
+                        <td>Cloud Load Balancing</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-semibold">Compute &amp; API</td>
+                        <td>Least Privilege, Continuous Auth</td>
+                        <td>Amazon EKS / AWS Fargate</td>
+                        <td>Google Kubernetes Engine (GKE) / Cloud Run</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-semibold">Database</td>
+                        <td>Encrypted at Rest, Isolated Subnet</td>
+                        <td>Amazon Aurora PostgreSQL</td>
+                        <td>Google Cloud SQL PostgreSQL</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-semibold">Key Management</td>
+                        <td>Hardware Root of Trust, No Secrets in Code</td>
+                        <td>AWS KMS / AWS CloudHSM</td>
+                        <td>Google Cloud KMS / Cloud HSM</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-semibold">Audit &amp; Monitoring</td>
+                        <td>Log Everything, Real-time Detection</td>
+                        <td>AWS CloudTrail + Amazon GuardDuty</td>
+                        <td>Cloud Audit Logs + Security Command Center</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-semibold">Integritas Dokumen</td>
+                        <td>Immutable Truth, Trustless Verification</td>
+                        <td>Amazon Managed Blockchain / Ethereum</td>
+                        <td>GCP Blockchain Node Engine / Polygon</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

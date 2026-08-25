@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Buat Sertifikat PKL - Sistem Administrasi SMK{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h4 class="mb-0 fw-bold"><i class="bi bi-patch-plus text-primary me-2"></i>Buat Sertifikat PKL Baru</h4>
+            </div>
+            <div class="card-body p-3 p-sm-4">
+                <p class="text-muted small mb-4">Penerbitan sertifikat magang / Praktik Kerja Lapangan dengan digital signature DUDI dan pencatatan blockchain.</p>
+
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="student_id" class="form-label">Siswa Peserta PKL <span class="text-danger">*</span></label>
+                        <select class="form-select" id="student_id" name="student_id" required>
+                            <option value="" selected disabled>-- Pilih Siswa --</option>
+                            {% for student in students %}
+                            <option value="{{ student.id }}">{{ student.nis }} - {{ student.name }} ({{ student['class'] }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="company_id" class="form-label">Mitra Industri / Perusahaan (DUDI) <span class="text-danger">*</span></label>
+                        <select class="form-select" id="company_id" name="company_id" required>
+                            <option value="" selected disabled>-- Pilih Perusahaan --</option>
+                            {% for company in companies %}
+                            <option value="{{ company.id }}">{{ company.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="row g-3 mb-4">
+                        <div class="col-12 col-sm-6">
+                            <label for="period_start" class="form-label">Tanggal Mulai PKL <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="period_start" name="period_start" required>
+                        </div>
+                        <div class="col-12 col-sm-6">
+                            <label for="period_end" class="form-label">Tanggal Selesai PKL <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="period_end" name="period_end" required>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+                        <a href="{{ url_for('internship.list_internships') }}" class="btn btn-outline-secondary">Batal</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save me-1"></i> Simpan &amp; Catat di Blockchain
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

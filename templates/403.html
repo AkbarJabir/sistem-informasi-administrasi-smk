@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}403 Forbidden - Sistem Informasi Administrasi SMK{% endblock %}
+{% block content %}
+<div class="forbidden-container">
+    <div class="card p-4 p-md-5 border-danger shadow-sm">
+        <div class="mb-3">
+            <div class="d-inline-flex p-3 rounded-circle bg-danger bg-opacity-10 text-danger mb-2">
+                <i class="bi bi-shield-slash-fill" style="font-size: 3rem;"></i>
+            </div>
+        </div>
+        <h1 class="display-3 fw-bold text-danger mb-0">403</h1>
+        <h3 class="fw-bold text-danger mb-2">Akses Ditolak / Forbidden</h3>
+        <p class="text-muted mb-4">Anda tidak memiliki izin (permission) untuk mengakses halaman atau menjalankan aksi ini berdasarkan Zero Trust RBAC Policy.</p>
+        
+        <div class="alert alert-warning py-2 mb-4 d-inline-block text-start mx-auto" role="alert">
+            <i class="bi bi-person-badge me-1"></i> Peran Anda Saat Ini: <strong>{{ role_display }}</strong>
+        </div>
+        
+        <div>
+            <a href="{{ url_for('dashboard.dashboard') }}" class="btn btn-primary px-4 py-2">
+                <i class="bi bi-arrow-left me-1"></i> Kembali ke Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

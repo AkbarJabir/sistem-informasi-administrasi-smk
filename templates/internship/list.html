@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Sertifikat PKL - Sistem Administrasi SMK{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1><i class="bi bi-building me-2 text-primary"></i>Sertifikat PKL &amp; Kerjasama DUDI</h1>
+        <p class="text-muted mb-0">Pencatatan sertifikat Praktik Kerja Lapangan (PKL) terverifikasi blockchain</p>
+    </div>
+    {% if session.get('role') == 'staf_tu' %}
+    <div class="page-header-actions">
+        <a href="{{ url_for('internship.create') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-1"></i> Buat Sertifikat PKL
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        {% if certs %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th style="width: 5%;">No</th>
+                        <th>Nama Siswa</th>
+                        <th>Perusahaan / Mitra DUDI</th>
+                        <th>Periode PKL</th>
+                        <th>Document Hash</th>
+                        <th>Status Ledger</th>
+                        <th class="text-center" style="width: 15%;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cert in certs %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>
+                            <strong class="text-dark">{{ cert.student_name }}</strong><br>
+                            <small class="text-muted">NIS: {{ cert.nis }}</small>
+                        </td>
+                        <td class="fw-semibold"><i class="bi bi-building text-muted me-1"></i>{{ cert.company_name }}</td>
+                        <td>{{ cert.period_start }} s/d {{ cert.period_end }}</td>
+                        <td><code>{{ cert.document_hash[:12] }}...</code></td>
+                        <td>
+                            {% if cert.blockchain_tx_hash %}
+                            <span class="badge bg-success"><i class="bi bi-patch-check-fill me-1"></i> On-Chain</span>
+                            {% else %}
+                            <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split me-1"></i> Pending</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <a href="{{ url_for('internship.detail', id=cert.id) }}" class="btn btn-sm btn-info text-white">
+                                <i class="bi bi-eye"></i> Detail
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state py-5">
+            <i class="bi bi-building-slash d-block mb-3"></i>
+            <h5>Belum Ada Sertifikat PKL</h5>
+            <p class="mb-3">Belum ada sertifikat PKL yang diterbitkan dalam sistem.</p>
+            {% if session.get('role') == 'staf_tu' %}
+            <a href="{{ url_for('internship.create') }}" class="btn btn-primary btn-sm"><i class="bi bi-plus-circle me-1"></i> Buat Sertifikat Sekarang</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

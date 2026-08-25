@@ -1,0 +1,262 @@
+{% extends "base.html" %}
+{% block title %}Security Operations Dashboard — Zero Trust &amp; Blockchain{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1><i class="bi bi-shield-shaded me-2 text-danger"></i>Security Operations Dashboard</h1>
+        <p class="text-muted mb-0">Monitoring Keamanan Sistem, Zero Trust Policy Enforcement, WAF, MFA &amp; Blockchain Status</p>
+    </div>
+    <div class="page-header-actions">
+        <span class="badge bg-success py-2 px-3"><i class="bi bi-shield-fill-check me-1"></i> Security Posture: OPTIMAL</span>
+        <a href="{{ url_for('security.cloud_architecture') }}" class="btn btn-outline-primary btn-sm"><i class="bi bi-diagram-3 me-1"></i> Topologi Cloud</a>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     1. Status Cards (6 Key Indicators)
+     ═══════════════════════════════════════════════════════════════════ -->
+<div class="row g-3 mb-4">
+    <!-- Card 1: WAF Status -->
+    <div class="col-12 col-sm-6 col-md-4 col-xl-2">
+        <div class="card stat-card bg-danger-custom shadow-sm h-100 p-3">
+            <div class="w-100">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="stat-icon fs-2"><i class="bi bi-shield-slash-fill"></i></div>
+                    <span class="badge bg-white text-danger fw-bold">ACTIVE</span>
+                </div>
+                <div class="stat-value fs-4 mt-2">{{ metrics.waf_blocked_count }}</div>
+                <div class="stat-label small">WAF Attacks Blocked</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 2: MFA Status -->
+    <div class="col-12 col-sm-6 col-md-4 col-xl-2">
+        <div class="card stat-card bg-success-custom shadow-sm h-100 p-3">
+            <div class="w-100">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="stat-icon fs-2"><i class="bi bi-key-fill"></i></div>
+                    <span class="badge bg-white text-success fw-bold">ENFORCED</span>
+                </div>
+                <div class="stat-value fs-4 mt-2">100%</div>
+                <div class="stat-label small">Admin MFA Compliance</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 3: Zero Trust RBAC -->
+    <div class="col-12 col-sm-6 col-md-4 col-xl-2">
+        <div class="card stat-card bg-primary-custom shadow-sm h-100 p-3">
+            <div class="w-100">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="stat-icon fs-2"><i class="bi bi-person-check-fill"></i></div>
+                    <span class="badge bg-white text-primary fw-bold">STRICT</span>
+                </div>
+                <div class="stat-value fs-4 mt-2">5 Roles</div>
+                <div class="stat-label small">RBAC Enforced (403)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 4: Blockchain Simulation -->
+    <div class="col-12 col-sm-6 col-md-4 col-xl-2">
+        <div class="card stat-card bg-info-custom shadow-sm h-100 p-3">
+            <div class="w-100">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="stat-icon fs-2"><i class="bi bi-boxes"></i></div>
+                    <span class="badge bg-white text-info fw-bold">VALID</span>
+                </div>
+                <div class="stat-value fs-4 mt-2">{{ metrics.chain_length }} Blocks</div>
+                <div class="stat-label small">Blockchain Ledger</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 5: Total Audit Logs -->
+    <div class="col-12 col-sm-6 col-md-4 col-xl-2">
+        <div class="card stat-card bg-warning-custom shadow-sm h-100 p-3">
+            <div class="w-100">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="stat-icon fs-2"><i class="bi bi-journal-text"></i></div>
+                    <span class="badge bg-white text-dark fw-bold">AUDIT</span>
+                </div>
+                <div class="stat-value fs-4 mt-2">{{ metrics.total_logs }}</div>
+                <div class="stat-label small opacity-90">Total Audit Events</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 6: Failed Access Attempts -->
+    <div class="col-12 col-sm-6 col-md-4 col-xl-2">
+        <div class="card stat-card bg-danger-custom shadow-sm h-100 p-3">
+            <div class="w-100">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="stat-icon fs-2"><i class="bi bi-exclamation-octagon-fill"></i></div>
+                    <span class="badge bg-white text-danger fw-bold">DENIED</span>
+                </div>
+                <div class="stat-value fs-4 mt-2">{{ metrics.failed_attempts }}</div>
+                <div class="stat-label small">Access Denied (403)</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     2. Security Control Panels
+     ═══════════════════════════════════════════════════════════════════ -->
+<div class="row g-4 mb-4">
+    <!-- Zero Trust & WAF Controls -->
+    <div class="col-12 col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white fw-bold py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <span><i class="bi bi-shield-check text-primary me-2"></i>Zero Trust Policy Engine</span>
+                <span class="badge bg-success-subtle text-success border border-success-subtle">Continuous Verification</span>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm table-borderless mb-0">
+                        <tbody>
+                            <tr>
+                                <td style="width: 45%;"><strong>Identity Verification</strong></td>
+                                <td><span class="badge bg-success"><i class="bi bi-check2 me-1"></i> Session-based &amp; Hash Verified</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Authorization Model</strong></td>
+                                <td><span class="badge bg-primary">RBAC Decorator on All Endpoints</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>MFA Administrative Enforcement</strong></td>
+                                <td><span class="badge bg-success"><i class="bi bi-check2 me-1"></i> Staf TU &amp; Kepala Sekolah (OTP: 123456)</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Least Privilege Principle</strong></td>
+                                <td><span class="badge bg-success"><i class="bi bi-check2 me-1"></i> Enforced (Siswa isolated to self)</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>API Security Policy</strong></td>
+                                <td><span class="badge bg-danger text-white"><i class="bi bi-shield-lock me-1"></i> 403 Forbidden for Non-Guru API Updates</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Data at Rest &amp; Transit</strong></td>
+                                <td><span class="badge bg-info text-dark">TLS 1.3 + KMS Protected Storage</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Blockchain Simulation Status -->
+    <div class="col-12 col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white fw-bold py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <span><i class="bi bi-boxes text-info me-2"></i>Blockchain &amp; Smart Contract Status</span>
+                <span class="badge bg-primary blockchain-label">Simulation</span>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm table-borderless mb-0">
+                        <tbody>
+                            <tr>
+                                <td style="width: 45%;"><strong>Ledger State</strong></td>
+                                <td>
+                                    {% if metrics.chain_integrity %}
+                                    <span class="badge bg-success"><i class="bi bi-check-circle-fill me-1"></i> HEALTHY ({{ metrics.chain_integrity_msg }})</span>
+                                    {% else %}
+                                    <span class="badge bg-danger"><i class="bi bi-exclamation-triangle-fill me-1"></i> CHAIN TAMPERED</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Total Block Count</strong></td>
+                                <td><code>#{{ metrics.chain_length }} blocks (including Genesis)</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Hashing Algorithm</strong></td>
+                                <td><code>SHA-256 (32 bytes / 256 bits)</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Smart Contract Auth</strong></td>
+                                <td><span class="badge bg-primary">Kepala Sekolah &amp; TU Only</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Reentrancy Protection</strong></td>
+                                <td><span class="badge bg-success"><i class="bi bi-lock-fill me-1"></i> Mutex Guard Active</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Public Verification</strong></td>
+                                <td><span class="badge bg-success"><i class="bi bi-unlock me-1"></i> Open Trustless Portal (/verify/)</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     3. Recent Security Events Log
+     ═══════════════════════════════════════════════════════════════════ -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center py-3 flex-wrap gap-2">
+        <h5 class="mb-0 fw-bold"><i class="bi bi-activity text-danger me-2"></i>Aktivitas &amp; Security Events Terkini</h5>
+        <a href="{{ url_for('audit.list_audit_logs') }}" class="btn btn-sm btn-outline-secondary">Lihat Semua Audit Log <i class="bi bi-arrow-right"></i></a>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Waktu</th>
+                        <th>User</th>
+                        <th>Role</th>
+                        <th>Aksi / Event</th>
+                        <th>Resource</th>
+                        <th>Detail</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for event in recent_events %}
+                    <tr>
+                        <td><small class="text-muted text-nowrap">{{ event.timestamp }}</small></td>
+                        <td><strong>{{ event.user_name or 'Anonymous' }}</strong></td>
+                        <td><span class="badge bg-role-{{ event.user_role|replace('_', '-') }}">{{ event.user_role|replace('_', ' ')|title }}</span></td>
+                        <td>
+                            {% if event.action == 'ACCESS_DENIED' %}
+                            <span class="badge bg-danger"><i class="bi bi-slash-circle me-1"></i> ACCESS DENIED</span>
+                            {% elif event.action == 'mfa_failed' %}
+                            <span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i> MFA FAILED</span>
+                            {% elif event.action == 'mfa_verify' %}
+                            <span class="badge bg-success"><i class="bi bi-shield-check me-1"></i> MFA VERIFIED</span>
+                            {% elif event.action == 'APPROVE' %}
+                            <span class="badge bg-primary"><i class="bi bi-link-45deg me-1"></i> ON-CHAIN APPROVE</span>
+                            {% elif event.action == 'GRADE_UPDATE' %}
+                            <span class="badge bg-warning text-dark"><i class="bi bi-pencil me-1"></i> GRADE UPDATE</span>
+                            {% else %}
+                            <span class="badge bg-secondary">{{ event.action }}</span>
+                            {% endif %}
+                        </td>
+                        <td><code>{{ event.resource }}</code></td>
+                        <td><small class="text-secondary">{{ event.detail }}</small></td>
+                        <td>
+                            {% if event.action in ['ACCESS_DENIED', 'mfa_failed'] %}
+                            <span class="badge bg-danger-subtle text-danger border border-danger">BLOCKED</span>
+                            {% else %}
+                            <span class="badge bg-success-subtle text-success border border-success">ALLOWED</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-4">Belum ada security event yang tercatat.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
